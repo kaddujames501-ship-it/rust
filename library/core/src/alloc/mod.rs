@@ -349,6 +349,14 @@ pub const unsafe trait Allocator {
     ///     of the memory block returned by the `grow_zeroed` call, which may be larger than
     ///     `new_layout.size()`.
     ///
+    /// If this returns `Ok`, then the memory block referenced by `ptr` has been [*invalidated*].
+    ///
+    /// The old `ptr` must not be used to access the memory, even if the allocation was grown in-place.
+    /// The returned pointer is the only valid pointer for accessing this memory now.
+    ///
+    /// If this method returns `Err`, then the memory block has not been *invalidated*,
+    /// and the contents of the memory block are unaltered.
+    ///
     /// # Safety
     ///
     /// * `ptr` must denote a block of memory [*currently allocated*] via this allocator.
@@ -358,6 +366,7 @@ pub const unsafe trait Allocator {
     /// Note that `new_layout.align()` need not be the same as `old_layout.align()`.
     ///
     /// [*currently allocated*]: #currently-allocated-memory
+    /// [*invalidated*]: #invalidating-memory-blocks
     /// [*fit*]: #memory-fitting
     ///
     /// # Errors
